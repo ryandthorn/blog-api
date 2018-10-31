@@ -16,7 +16,7 @@ describe('Blog posts', function() {
 
   it('should list blog post objects on GET', function() {
     return chai.request(app)
-      .get('/blog-posts')
+      .get('/posts')
       .then(function(res) {
         expect(res).to.have.status(200);
         expect(res).to.be.json;
@@ -32,7 +32,7 @@ describe('Blog posts', function() {
   it('should create an item on POST', function() {
     const newItem = {title: 'test blog', content: 'content', author: 'Authorine Author', publishDate: '01/23/4567'};
     return chai.request(app)
-      .post('/blog-posts')
+      .post('/posts')
       .send(newItem)
       .then(function(res) {
         expect(res).to.have.status(201);
@@ -46,11 +46,11 @@ describe('Blog posts', function() {
   it('should update an item on PUT', function() {
     const updateItem = {title: 'test blog post', content: `here's the content`, author: 'Author Authorson', publishDate: '01/23/45'};
     return chai.request(app)
-      .get('/blog-posts')
+      .get('/posts')
       .then(function(res) {
         updateItem.id = res.body[0].id;
         return chai.request(app)
-          .put(`/blog-posts/${updateItem.id}`)
+          .put(`/posts/${updateItem.id}`)
           .send(updateItem)
       })
       .then(function(res) {
@@ -59,10 +59,10 @@ describe('Blog posts', function() {
   });
   it('should delete an item on DELETE', function() {
     return chai.request(app)
-      .get('/blog-posts')
+      .get('/posts')
       .then(function(res) {
         return chai.request(app)
-          .delete(`/blog-posts/${res.body[0].id}`);
+          .delete(`/posts/${res.body[0].id}`);
       })
       .then(function(res) {
         expect(res).to.have.status(204);
