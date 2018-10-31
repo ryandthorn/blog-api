@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require('express')
-const mongoose = requre('mongoose');
+const mongoose = require('mongoose');
   mongoose.Promise = global.Promise;
 const { PORT, DATABASE_URL } = require('./config');
 const router = require('./router');
@@ -11,7 +11,6 @@ const app = express();
 app.use(express.json());
 app.use(morgan('common'));
 app.use('/posts', router);
-// If client makes request to any other endpoint, send 404
 app.use("*", function(req, res) {
   res.status(404).json({ message: "Not Found" });
 });

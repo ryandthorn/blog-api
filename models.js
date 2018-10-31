@@ -3,16 +3,16 @@
 const mongoose = require("mongoose");
 
 const blogSchema = mongoose.Schema({
-  title: { type: String, required: true },
-  content: { type: String, required: true },
+  title: String,
+  content: String,
   author: {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true }
+    firstName: String,
+    lastName: String
   }
 });
 
 blogSchema.virtual("authorFullName").get(function() {
-  return `${this.author.firstName} ${this.author.lastName}`.trim();
+  return `${this.author['firstName']} ${this.author['lastName']}`.trim();
 });
 
 blogSchema.methods.serialize = function() {

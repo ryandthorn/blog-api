@@ -1,17 +1,17 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
-
+const { PORT, TEST_DATABASE_URL } = require('../config');
 const { app, runServer, closeServer } = require('../server');
 
 chai.use(chaiHttp);
 
 describe('Blog posts', function() {
   before(function() {
-    return runServer();
+    return runServer(TEST_DATABASE_URL);
   });
   after(function() {
-    return closeServer();
+    return closeServer(TEST_DATABASE_URL);
   });
 
   it('should list blog post objects on GET', function() {
@@ -38,7 +38,7 @@ describe('Blog posts', function() {
         expect(res).to.have.status(201);
         expect(res).to.be.json;
         expect(res.body).to.be.a('object');
-        expect(res.body).to.include.keys('id', 'title', 'content', 'author', 'publishDate');
+        expect(res.body).to.include.keys('id', 'title', 'content', 'author'/*, 'publishDate'*/);
         expect(res.body.id).to.not.equal(null);
         expect(res.body).to.deep.equal(Object.assign(newItem, {id: res.body.id}));
       });
