@@ -1,17 +1,17 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
-const { PORT, TEST_DATABASE_URL } = require('../config');
+const { DATABASE_URL, PORT } = require('../config');
 const { app, runServer, closeServer } = require('../server');
 
 chai.use(chaiHttp);
 
 describe('Blog posts', function() {
   before(function() {
-    return runServer(TEST_DATABASE_URL);
+    return runServer(DATABASE_URL);
   });
   after(function() {
-    return closeServer(TEST_DATABASE_URL);
+    return closeServer(DATABASE_URL);
   });
 
   it('should list blog post objects on GET', function() {

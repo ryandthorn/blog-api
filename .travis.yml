@@ -4,6 +4,6 @@ deploy:
   provider: heroku
   api_key:
     secure: GeuVR/vWmJgTGJcxgWdlgbdQPfPY9pn9ZF8SsUN/vXVmIH96etThSUc3gFsx5xwuC6sLg9Gl/25ENoRj4XAqqWJNJwB1DZ270/OMhgyZXmil7ey/sxZgUtJd+M4HsxtzgcVgHLjhE6FCRousc6x1BDlefSAWvD2x3bO3y69fDkpnc1ez7ZJz9fUt2Zajn1DqUsu9JWsFZPkeBcRyIIqFgMVQZ7WXdaq8G+yjej8ZovmnfPmLIhbkW2K7tpfwppQZazVw33kZf0PpQLTIOykXQN9lN96DDUhsu1rAGCwYAYSVQe4nomUZ8NV1eCj2mI+5vFxG99joX31RPung6igHrMwsuZRIoOFli5JdNhJTvLXXuwm4K+j1UdolE98SJSD6nmnSK/7Nr1DKHW1/L37u8xqKiNyDL2ru6OS9ZEKj/ohNCc6141fRino1F9CcnJaTrXNlcrOJhTvjzu6rgIEnflR8WKzrjnnQDRjauu+/1vm0VctUodazEsVJx+GP1C51ZzDgqGxD8B/YKsGL7+sqfLL9PjHDIZstmem8S+AMB3YqbNJKu3oFsdreYa7EAirEDcLAITfcEWJ/+OpVZkGm863DkEIa3YgoSWW5ThKM+wO1wHitKMa3pGKEW11r76CDG1sT7ZEySCW1j6VS438/ZoLro3auvAQKi4sbC1WqKag=
-  app: fast-retreat-28318
+  app: howling-asylum-94984
   on:
     repo: ryandthorn/blog-api
