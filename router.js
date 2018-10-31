@@ -4,7 +4,8 @@ const router = express.Router();
 const {BlogPost} = require('./models');
 
 router.get('/', (req, res) => {
-  BlogPost.find()
+  BlogPost
+    .find()
     .then(posts => {
       res.json({
         posts: posts.map(post => post.serialize())
@@ -37,7 +38,6 @@ router.post('/', (req, res) => {
     }
   }
 
-  console.log(`Creating new blog post: "${req.body.title}"`)
   BlogPost.create({
     title: req.body.title,
     content: req.body.content,
@@ -77,9 +77,8 @@ router.put('/:id', (req, res) => {
     }
   });
   
-  console.log(`Updating blog post "${req.body.title}" \(ID: ${req.body.id}\)`);
   BlogPost
-    .findByIdAndUpdate(req.params.id, { $set: toUpdate })
+    .findByIdAndUpdate(req.params.id, { $set: toUpdate }, { new: true })
     .then(post => res.status(204).end())
     .catch(err => {
       console.error(err);
@@ -88,7 +87,8 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  BlogPost.findByIdAndRemove(req.params.id)
+  BlogPost
+    .findByIdAndRemove(req.params.id)
     .then(post => {
       console.log(`Deleted blog post with ID ${req.params.id}`);
       res.status(204).end();

@@ -3,12 +3,13 @@
 const mongoose = require("mongoose");
 
 const blogSchema = mongoose.Schema({
-  title: String,
-  content: String,
+  title: {type: String, required: true},
   author: {
     firstName: String,
     lastName: String
-  }
+  },
+  content: String,
+  created: {type: Date, default: Date.now}
 });
 
 blogSchema.virtual("authorFullName").get(function() {
@@ -19,8 +20,9 @@ blogSchema.methods.serialize = function() {
   return {
     id: this._id,
     title: this.title,
+    author: this.authorFullName,
     content: this.content,
-    author: this.authorFullName
+    created: this.created
   };
 };
 
