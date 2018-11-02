@@ -52,7 +52,7 @@ router.post('/', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-  if (!(title in req.body)) {
+  if (!(req.body.title)) {
       const message = `Missing title in request body`
       console.error(message);
       return res.status(400).send(message);
