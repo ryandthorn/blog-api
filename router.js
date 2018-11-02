@@ -8,7 +8,8 @@ router.get('/', (req, res) => {
     .find()
     .then(posts => {
       res.json({
-        posts: posts.map(post => post.serialize())
+        posts: posts.map(
+          (post) => post.serialize())
       });
     })
     .catch(err => {
