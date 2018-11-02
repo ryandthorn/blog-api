@@ -52,15 +52,12 @@ router.post('/', (req, res) => {
 });
 
 router.put('/:id', (req, res) => {
-  const requiredFields = ['title', 'content', 'author'];
-  for (let i=0; i<requiredFields.length; i++) {
-    const field = requiredFields[i];
-    if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`
+  if (!(title in req.body)) {
+      const message = `Missing title in request body`
       console.error(message);
       return res.status(400).send(message);
     }
-  }
+  
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     const message =
       `Request path id (${req.params.id}) and request body id ` +

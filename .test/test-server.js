@@ -1,3 +1,5 @@
+// NOTE: tests don't work, need to implement
+
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
@@ -22,7 +24,7 @@ describe('Blog posts', function() {
         expect(res).to.be.json;
         expect(res.body).to.be.a('array');
         expect(res.body.length).to.be.at.least(1);
-        const expectedKeys = ['id', 'title', 'content', 'author', 'publishDate']
+        const expectedKeys = ['_id', 'title', 'content', 'author', 'publishDate']
         res.body.forEach(function(item) {
           expect(item).to.be.a('object');
           expect(item).to.include.keys(expectedKeys);
@@ -30,7 +32,7 @@ describe('Blog posts', function() {
       });
   });
   it('should create an item on POST', function() {
-    const newItem = {title: 'test blog', content: 'content', author: 'Authorine Author', publishDate: '01/23/4567'};
+    const newItem = {title: 'test blog', content: 'content', author: {firstName: "Author", lastname: "Jones"}, publishDate: '01/23/4567'};
     return chai.request(app)
       .post('/posts')
       .send(newItem)
