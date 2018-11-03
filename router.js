@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {BlogPost} = require('./models');
+const {BlogPost, Author} = require('./models');
 
 router.get('/', (req, res) => {
   BlogPost
@@ -21,6 +21,14 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   BlogPost
     .findById(req.params.id)
+    .then(post => {
+      // post.comments.push(
+      //   { content: "Here is a first comment." },
+      //   { content: "Here is a second comment." },
+      //   { content: "Here is a third comment." }
+      // );
+      post.save();
+    })
     .then(post => res.json(post.serialize()))
     .catch(err => {
       console.error(err);
