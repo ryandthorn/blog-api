@@ -26,7 +26,7 @@ blogSchema.methods.serialize = function() {
   };
 };
 
-const BlogPost = mongoose.model("BlogPost", blogSchema, "posts");
+const BlogPost = mongoose.model("BlogPost", blogSchema);
 
 module.exports = { BlogPost };
 /*
