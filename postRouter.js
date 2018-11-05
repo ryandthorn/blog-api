@@ -1,16 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-const {BlogPost} = require('./models');
+const {Author, BlogPost} = require('./models');
 
 router.get('/', (req, res) => {
   BlogPost
     .find()
     .then(posts => {
-      res.json({
-        posts: posts.map(
-          (post) => post.serialize())
-      });
+      res.json(posts.map(post => post.serialize()));
     })
     .catch(err => {
       console.error(err);
@@ -29,7 +26,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const requiredFields = ['title', 'content', 'author'];
+  const requiredFields = ['title', 'content', 'author_id'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
@@ -39,15 +36,30 @@ router.post('/', (req, res) => {
     }
   }
 
-  BlogPost.create({
-    title: req.body.title,
-    content: req.body.content,
-    author: req.body.author
-  })
-    .then(post => res.status(201).json(post.serialize()))
+  Author
+    .findById(req.body.author_id)
+    .then(author => {
+      if (author) {
+        BlogPost
+          .create({
+            title: req.body.title,
+            content: req.body.content,
+            author: author // *** ISSUE WITH SOLUTION ***
+          })
+          .then(post => res.status(201).json(post.serialize()))
+          .catch(err => {
+            console.error(err);
+            res.status(500).json({ message: "Internal server error" });
+          });
+      } else {
+        const message = `Author not found`;
+        console.error(message);
+        return res.status(400).send(message);
+      }
+    })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ error: `This doesn't work.`})
     });
 });
 
