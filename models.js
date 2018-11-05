@@ -3,7 +3,7 @@
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
-var authorSchema = mongoose.Schema({
+const authorSchema = mongoose.Schema({
   firstName: 'string',
   lastName: 'string',
   userName: {
@@ -12,7 +12,19 @@ var authorSchema = mongoose.Schema({
   }
 });
 
-var commentSchema = mongoose.Schema({ content: 'string' });
+authorSchema.virtual("authorName").get(function() {
+  return `${this.firstName} ${this.lastName}`.trim();
+});
+
+authorSchema.methods.serialize = function() {
+  return {
+    _id: this._id,
+    name: this.authorName,
+    userName: this.userName
+  };
+};
+
+const commentSchema = mongoose.Schema({ content: 'string' });
 
 const blogPostSchema = mongoose.Schema({
   title: {type: String, required: true},
@@ -28,6 +40,11 @@ blogPostSchema.pre('find', function(next) {
 });
 
 blogPostSchema.pre('findOne', function(next) {
+  this.populate('author');
+  next();
+});
+
+blogPostSchema.pre('findByIdAndUpdate', function(next) {
   this.populate('author');
   next();
 });

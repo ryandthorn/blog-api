@@ -59,7 +59,7 @@ router.post('/', (req, res) => {
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ error: `This doesn't work.`})
+      res.status(500).json({ error: `Something went wrong`})
     });
 });
 
@@ -79,7 +79,7 @@ router.put('/:id', (req, res) => {
   }
 
   const toUpdate = {};
-  const updateableFields = ["title", "content", "author"];
+  const updateableFields = ["title", "content"];
 
   updateableFields.forEach(field => {
     if (field in req.body) {
@@ -87,9 +87,12 @@ router.put('/:id', (req, res) => {
     }
   });
   
+  // *** ISSUE WITH AUTHOR COMING BACK UNDEFINED ***
+  // Do I need author ID from req.body to access author info?
+  // SOLUTION DOES NOT SEND AUTHOR IN RESPONSE OBJECT
   BlogPost
     .findByIdAndUpdate(req.params.id, { $set: toUpdate }, { new: true })
-    .then(post => res.status(204).end())
+    .then(post => res.status(200).json(post.serialize()))
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: "Internal server error" });
