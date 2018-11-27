@@ -2,18 +2,30 @@
 
 const mongoose = require("mongoose");
 
-const blogSchema = mongoose.Schema({
-  title: {type: String, required: true},
-  author: {
-    firstName: String,
-    lastName: String
-  },
-  content: String,
-  created: {type: Date, default: Date.now}
+const commentSchema = mongoose.Schema({
+  content: 'string'
 });
 
+const authorSchema = mongoose.Schema({
+  firstName: 'string',
+  lastName: 'string',
+  userName: {
+    type: 'string',
+    unique: true
+  }
+});
+
+const blogSchema = mongoose.Schema({
+  title: {type: String, required: true},
+  author: {type: mongoose.Schema.Types.ObjectId, ref: 'author'},
+  content: String,
+  created: {type: Date, default: Date.now},
+  comments: [commentSchema]
+});
+
+// Using virtual "authorFullName" throws TypeError: Cannot read property 'firstName' of undefined
 blogSchema.virtual("authorFullName").get(function() {
-  return `${this.author['firstName']} ${this.author['lastName']}`.trim();
+  return `${this.author.firstName} ${this.author.lastName}`.trim();
 });
 
 blogSchema.methods.serialize = function() {
@@ -26,9 +38,23 @@ blogSchema.methods.serialize = function() {
   };
 };
 
+blogSchema.pre('find', function(next) {
+  this.populate('author');
+  next();
+});
+blogSchema.pre('findOne', function(next) {
+  this.populate('author');
+  next();
+});
+blogSchema.pre('findByIdAndUpdate', function(next) {
+  this.populate('author');
+  next();
+});
+
+const Author = mongoose.model('Author', authorSchema);
 const BlogPost = mongoose.model("BlogPost", blogSchema);
 
-module.exports = { BlogPost };
+module.exports = { Author, BlogPost };
 /*
 {
   create: function(title, content, author, publishDate) {

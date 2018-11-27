@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {BlogPost} = require('./models');
+const {Author, BlogPost} = require('./models');
 
 router.get('/', (req, res) => {
   BlogPost
@@ -21,7 +21,14 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   BlogPost
     .findById(req.params.id)
-    .then(post => res.json(post.serialize()))
+    .then(post => {
+      res.json({
+        title: post.title,
+        author: post.authorFullName,
+        content: post.content,
+        comments: post.comments
+      });
+    })
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: "Internal server error" });
@@ -29,7 +36,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const requiredFields = ['title', 'content', 'author'];
+  const requiredFields = ['title', 'content', 'author_id'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
@@ -39,19 +46,32 @@ router.post('/', (req, res) => {
     }
   }
 
-  BlogPost.create({
-    title: req.body.title,
-    content: req.body.content,
-    author: req.body.author
-  })
-    .then(post => res.status(201).json(post.serialize()))
+  Author
+    .findById(req.body.author_id)
+    .then(author => {
+      if (author) {
+        BlogPost
+          .create({
+            title: req.body.title,
+            content: req.body.content,
+            author: author
+          })
+          .then(post => res.status(201).json(post.serialize()))
+          .catch(err => {
+            console.error(err);
+            res.status(500).json({ message: "Internal server error" });
+          });
+      }
+    })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ error: 'Something went wrong'});
     });
 });
 
+// PUT still displays author as undefined undefined
 router.put('/:id', (req, res) => {
+
   if (!(req.body.title)) {
       const message = `Missing title in request body`
       console.error(message);
@@ -67,17 +87,22 @@ router.put('/:id', (req, res) => {
   }
 
   const toUpdate = {};
-  const updateableFields = ["title", "content", "author"];
+  const updateableFields = ["title", "content"];
 
   updateableFields.forEach(field => {
     if (field in req.body) {
       toUpdate[field] = req.body[field];
     }
   });
-  
+
+// Solution doesn't return author info
   BlogPost
     .findByIdAndUpdate(req.params.id, { $set: toUpdate }, { new: true })
-    .then(post => res.status(204).end())
+    .then(updatedPost => res.status(200).json({
+      id: updatedPost.id,
+      title: updatedPost.title,
+      content: updatedPost.content
+    }))
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: "Internal server error" });
