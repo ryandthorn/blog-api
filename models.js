@@ -1,10 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose");
-
-const commentSchema = mongoose.Schema({
-  content: 'string'
-});
+mongoose.Promise = global.Promise;
 
 const authorSchema = mongoose.Schema({
   firstName: 'string',
@@ -15,44 +12,60 @@ const authorSchema = mongoose.Schema({
   }
 });
 
-const blogSchema = mongoose.Schema({
+authorSchema.virtual("authorName").get(function() {
+  return `${this.firstName} ${this.lastName}`.trim();
+});
+
+authorSchema.methods.serialize = function() {
+  return {
+    _id: this._id,
+    name: this.authorName,
+    userName: this.userName
+  };
+};
+
+const commentSchema = mongoose.Schema({ content: 'string' });
+
+const blogPostSchema = mongoose.Schema({
   title: {type: String, required: true},
-  author: {type: mongoose.Schema.Types.ObjectId, ref: 'author'},
+  author: {type: mongoose.Schema.Types.ObjectId, ref: 'Author'},
   content: String,
   created: {type: Date, default: Date.now},
   comments: [commentSchema]
 });
 
-// Using virtual "authorFullName" throws TypeError: Cannot read property 'firstName' of undefined
-blogSchema.virtual("authorFullName").get(function() {
+blogPostSchema.pre('find', function(next) {
+  this.populate('author');
+  next();
+});
+
+blogPostSchema.pre('findOne', function(next) {
+  this.populate('author');
+  next();
+});
+
+blogPostSchema.pre('findByIdAndUpdate', function(next) {
+  this.populate('author');
+  next();
+});
+
+blogPostSchema.virtual("authorName").get(function() {
   return `${this.author.firstName} ${this.author.lastName}`.trim();
 });
 
-blogSchema.methods.serialize = function() {
+blogPostSchema.methods.serialize = function() {
   return {
     id: this._id,
     title: this.title,
-    author: this.authorFullName,
+    author: this.authorName,
     content: this.content,
-    created: this.created
+    created: this.created,
+    comments: this.comments
   };
 };
 
-blogSchema.pre('find', function(next) {
-  this.populate('author');
-  next();
-});
-blogSchema.pre('findOne', function(next) {
-  this.populate('author');
-  next();
-});
-blogSchema.pre('findByIdAndUpdate', function(next) {
-  this.populate('author');
-  next();
-});
-
 const Author = mongoose.model('Author', authorSchema);
-const BlogPost = mongoose.model("BlogPost", blogSchema);
+const BlogPost = mongoose.model("BlogPost", blogPostSchema);
 
 module.exports = { Author, BlogPost };
 /*

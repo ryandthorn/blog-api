@@ -2,18 +2,21 @@
 
 const express = require('express')
 const mongoose = require('mongoose');
-  mongoose.Promise = global.Promise;
+mongoose.Promise = global.Promise;
 const { DATABASE_URL, PORT } = require('./config');
-const router = require('./router');
+const postRouter = require('./postRouter');
+const authorRouter = require('./authorRouter');
 const morgan = require('morgan');
 
 const app = express();
 app.use(express.json());
 app.use(morgan('common'));
-app.use('/posts', router);
+app.use('/posts', postRouter);
+app.use('/authors', authorRouter);
 app.use("*", function(req, res) {
   res.status(404).json({ message: "Not Found" });
 });
+
 
 let server;
 

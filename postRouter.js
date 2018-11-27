@@ -7,10 +7,7 @@ router.get('/', (req, res) => {
   BlogPost
     .find()
     .then(posts => {
-      res.json({
-        posts: posts.map(
-          (post) => post.serialize())
-      });
+      res.json(posts.map(post => post.serialize()));
     })
     .catch(err => {
       console.error(err);
@@ -54,18 +51,22 @@ router.post('/', (req, res) => {
           .create({
             title: req.body.title,
             content: req.body.content,
-            author: author
+            author: author // *** ISSUE WITH SOLUTION ***
           })
           .then(post => res.status(201).json(post.serialize()))
           .catch(err => {
             console.error(err);
             res.status(500).json({ message: "Internal server error" });
           });
+      } else {
+        const message = `Author not found`;
+        console.error(message);
+        return res.status(400).send(message);
       }
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ error: 'Something went wrong'});
+      res.status(500).json({ error: `Something went wrong`})
     });
 });
 
@@ -94,15 +95,13 @@ router.put('/:id', (req, res) => {
       toUpdate[field] = req.body[field];
     }
   });
-
-// Solution doesn't return author info
+  
+  // *** ISSUE WITH AUTHOR COMING BACK UNDEFINED ***
+  // Do I need author ID from req.body to access author info?
+  // SOLUTION DOES NOT SEND AUTHOR IN RESPONSE OBJECT
   BlogPost
     .findByIdAndUpdate(req.params.id, { $set: toUpdate }, { new: true })
-    .then(updatedPost => res.status(200).json({
-      id: updatedPost.id,
-      title: updatedPost.title,
-      content: updatedPost.content
-    }))
+    .then(post => res.status(200).json(post.serialize()))
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: "Internal server error" });
